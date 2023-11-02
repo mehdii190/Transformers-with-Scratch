@@ -1,0 +1,146 @@
+[
+    {
+        "label": "torch",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "torch",
+        "description": "torch",
+        "detail": "torch",
+        "documentation": {}
+    },
+    {
+        "label": "torch.nn",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "torch.nn",
+        "description": "torch.nn",
+        "detail": "torch.nn",
+        "documentation": {}
+    },
+    {
+        "label": "math",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "math",
+        "description": "math",
+        "detail": "math",
+        "documentation": {}
+    },
+    {
+        "label": "InputEmbeddings",
+        "kind": 6,
+        "importPath": "model",
+        "description": "model",
+        "peekOfCode": "class InputEmbeddings(nn.Module):\n    def __init__(self, d_model: int, vocab_size: int) -> None:\n        super().__init__()\n        self.d_model = d_model\n        self.vocab_size = vocab_size\n        self.embedding = nn.Embedding(vocab_size,d_model)\n    def forward(self, x):\n        return self.embedding(x) * torch.sqrt(self.d_model)\nclass PositionalEncoding(nn.Module):\n    def __init__(self,d_model: int , seq_len : int , dropout: float) -> None:",
+        "detail": "model",
+        "documentation": {}
+    },
+    {
+        "label": "PositionalEncoding",
+        "kind": 6,
+        "importPath": "model",
+        "description": "model",
+        "peekOfCode": "class PositionalEncoding(nn.Module):\n    def __init__(self,d_model: int , seq_len : int , dropout: float) -> None:\n        super().__init__()\n        self.d_model = d_model\n        self.seq_len = seq_len\n        self.dropout = nn.Dropout(dropout)\n        # create  a array of shape seq len , drop out         \n        pe = torch.zeros(seq_len, dropout)\n        # create a vector of shape\n        position = torch.arange(0,seq_len , dtype=torch.float).unsqueeze(1)",
+        "detail": "model",
+        "documentation": {}
+    },
+    {
+        "label": "LayerNormalization",
+        "kind": 6,
+        "importPath": "model",
+        "description": "model",
+        "peekOfCode": "class LayerNormalization(nn.Module):\n    def __init__(self, eps: float = 10**-6) -> None:\n        super().__init__()\n        self.eps = eps\n        self.alpha = nn.Parameter(torch.ones(1))\n        self.bias = nn.Parameter(torch.zeros(1))\n    def forward(self, x):\n        mean = x.mean(dim = -1, keepdim = True)\n        std = x.std(dim= -1, keep = True)\n        return self.alpha * (x - mean) / (std + self.eps) + self.bias",
+        "detail": "model",
+        "documentation": {}
+    },
+    {
+        "label": "FeedForwardBlack",
+        "kind": 6,
+        "importPath": "model",
+        "description": "model",
+        "peekOfCode": "class FeedForwardBlack(nn.Module):\n    def __init__(self, d_model: int, d_ff: int , dropout: float) -> None:\n        super().__init__()\n        self.linear_1 = nn.Linear(d_model,d_ff)\n        self.dropout = nn.Dropout(dropout)\n        self.linear_2 = nn.Linear(d_ff, d_model)\n    def forward(self, x ):\n        return self.linear_2(self.dropout(torch.relu(self.linear_1(x))))\nclass MultHeadAttentionBlock(nn.Module):",
+        "detail": "model",
+        "documentation": {}
+    },
+    {
+        "label": "MultHeadAttentionBlock",
+        "kind": 6,
+        "importPath": "model",
+        "description": "model",
+        "peekOfCode": "class MultHeadAttentionBlock(nn.Module):\n    def __init__(self, d_model: int , h: int , dropout: float) -> None:\n        super().__init__()\n        self.d_model = d_model\n        self.h = h\n        assert d_model % h == 0, \"d_model is not divisble by h\"\n        self.d_k = d_model // h\n        self.w_q = nn.Linear(d_model, d_model)\n        self.w_k = nn.Linear(d_model, d_model)\n        self.w_v = nn.Linear(d_model, d_model)",
+        "detail": "model",
+        "documentation": {}
+    },
+    {
+        "label": "ResidualConnection",
+        "kind": 6,
+        "importPath": "model",
+        "description": "model",
+        "peekOfCode": "class ResidualConnection(nn.Module):\n    def __init__(self, dropout: float) -> None:\n        super().__init__()\n        self.dropout = nn.Dropout(dropout)\n        self.norm = LayerNormalization()\n    def forward(self, x , subLayer):\n        return x + self.dropout(subLayer(self.norm(x)))\nclass EncoderBlock(nn.Module):\n    def __init__(self,self_attention_block: MultHeadAttentionBlock,feed_forward_block: FeedForwardBlack, dropout: float) -> None:\n        super().__init__()",
+        "detail": "model",
+        "documentation": {}
+    },
+    {
+        "label": "EncoderBlock",
+        "kind": 6,
+        "importPath": "model",
+        "description": "model",
+        "peekOfCode": "class EncoderBlock(nn.Module):\n    def __init__(self,self_attention_block: MultHeadAttentionBlock,feed_forward_block: FeedForwardBlack, dropout: float) -> None:\n        super().__init__()\n        self.self_attention_block = self_attention_block\n        self.feed_forward_block = feed_forward_block\n        self.residual_connections = nn.ModuleList([ResidualConnection(dropout) for _ in range(2)])\n    def forward(self, x, src_mask):\n        x = self.residual_connections[0](x, lambda x: self.self_attention_block(x, x, x, src_mask))\n        x = self.residual_connections[1](x, self.feed_forward_block)\n        return x",
+        "detail": "model",
+        "documentation": {}
+    },
+    {
+        "label": "Encoder",
+        "kind": 6,
+        "importPath": "model",
+        "description": "model",
+        "peekOfCode": "class Encoder(nn.Module):\n    def __init__(self,layers: nn.ModuleList) -> None:\n        super().__init__()\n        self.layers = layers\n        self.norm = LayerNormalization()\n    def forward(self, x, mask):\n        for layer in self.layers:\n            x = layer(x, mask)\n        return self.norm(x)\nclass DecoderBlock(nn.Module):",
+        "detail": "model",
+        "documentation": {}
+    },
+    {
+        "label": "DecoderBlock",
+        "kind": 6,
+        "importPath": "model",
+        "description": "model",
+        "peekOfCode": "class DecoderBlock(nn.Module):\n    def __init__(self,self_attention_block: MultHeadAttentionBlock,cross_attention_block:MultHeadAttentionBlock,feed_forward_block: FeedForwardBlack, dropout: float) -> None:\n        super().__init__()\n        self.self_attention_block = self_attention_block\n        self.cross_attention_block = cross_attention_block\n        self.feed_forward_block = feed_forward_block\n        self.residual_connections = nn.Module([ResidualConnection(dropout) for _ in range(3)])\n    def forward(self, x, encoder_output, src_mask, tgt_mask):\n        x = self.residual_connections[0](x, lambda x: self.self_attention_block(x, x, x, tgt_mask))\n        x = self.residual_connections[1](x, lambda x: self.cross_attention_block(x, encoder_output,encoder_output, src_mask))",
+        "detail": "model",
+        "documentation": {}
+    },
+    {
+        "label": "Decoder",
+        "kind": 6,
+        "importPath": "model",
+        "description": "model",
+        "peekOfCode": "class Decoder(nn.Module):\n    def __init__(self, layers: nn.ModuleList) -> None:\n        super().__init__()\n        self.layers = layers\n        self.norm = LayerNormalization()\n    def forward(self, x, encoder_output, src_mask, tgt_mask):\n        for layer in self.layers:\n            x = layer(x, encoder_output, src_mask, tgt_mask)\n        return self.norm(x)\nclass ProjectionLayer(nn.Module):",
+        "detail": "model",
+        "documentation": {}
+    },
+    {
+        "label": "ProjectionLayer",
+        "kind": 6,
+        "importPath": "model",
+        "description": "model",
+        "peekOfCode": "class ProjectionLayer(nn.Module):\n    def __init__(self, d_model: int, vocab_size: int) -> None:\n        super().__init__()      \n        self.proj = nn.Linear(d_model, vocab_size)\n    def forward(self, x):\n        return torch.log_softmax(self.proj(x), dim = -1 )        \nclass Transformer(nn.Module):\n    def __init__(self, encoder: Encoder,\n                 decoder: Decoder, \n                 src_embed: InputEmbeddings, ",
+        "detail": "model",
+        "documentation": {}
+    },
+    {
+        "label": "Transformer",
+        "kind": 6,
+        "importPath": "model",
+        "description": "model",
+        "peekOfCode": "class Transformer(nn.Module):\n    def __init__(self, encoder: Encoder,\n                 decoder: Decoder, \n                 src_embed: InputEmbeddings, \n                 tgt_embed: InputEmbeddings, \n                 src_pos: PositionalEncoding, \n                 projection_layer: ProjectionLayer) -> None:\n        super().__init__()    \n        self.encoder = encoder\n        self.decoder = decoder",
+        "detail": "model",
+        "documentation": {}
+    },
+    {
+        "label": "build_transformer",
+        "kind": 2,
+        "importPath": "model",
+        "description": "model",
+        "peekOfCode": "def build_transformer(src_vocab_size: int,\n                      tgt_vocab_size: int,\n                      src_seq_len: int,\n                      tgt_seq_len: int,\n                      d_model: int=512,\n                      N: int = 6,\n                      h: int=8,\n                      dropout: float= 0.1,\n                      d_ff: int = 2048):\n    src_embed = InputEmbeddings(d_model, src_vocab_size)",
+        "detail": "model",
+        "documentation": {}
+    }
+]
