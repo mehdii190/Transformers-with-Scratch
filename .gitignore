@@ -160,3 +160,9 @@ cython_debug/
 #.idea/
 
 /.vscode
+/tokenizer_en.json
+/tokenizer_it.json
+/attention_visual.ipynb
+/weights
+/__pycache__
+.vscode/PythonImportHelper-v2-Completion.json
