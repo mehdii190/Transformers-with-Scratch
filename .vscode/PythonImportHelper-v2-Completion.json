@@ -50,6 +50,22 @@
         "documentation": {}
     },
     {
+        "label": "DataLoader",
+        "importPath": "torch.utils.data",
+        "description": "torch.utils.data",
+        "isExtraImport": true,
+        "detail": "torch.utils.data",
+        "documentation": {}
+    },
+    {
+        "label": "Dataset",
+        "importPath": "torch.utils.data",
+        "description": "torch.utils.data",
+        "isExtraImport": true,
+        "detail": "torch.utils.data",
+        "documentation": {}
+    },
+    {
         "label": "math",
         "kind": 6,
         "isExtraImport": true,
@@ -104,6 +120,22 @@
         "description": "pathlib",
         "isExtraImport": true,
         "detail": "pathlib",
+        "documentation": {}
+    },
+    {
+        "label": "BilingualDataset",
+        "importPath": "dataset",
+        "description": "dataset",
+        "isExtraImport": true,
+        "detail": "dataset",
+        "documentation": {}
+    },
+    {
+        "label": "causal_mask",
+        "importPath": "dataset",
+        "description": "dataset",
+        "isExtraImport": true,
+        "detail": "dataset",
         "documentation": {}
     },
     {
@@ -264,7 +296,7 @@
         "kind": 2,
         "importPath": "train",
         "description": "train",
-        "peekOfCode": "def get_ds(config):\n    ds_raw = load_dataset(\"opus_books\", f\"{config['lang_src']}-f{config['tgt_src']}\", split=\"train\")\n    tokenizer_src = get_or_build_tokenizer(config, ds_raw, config[\"lang_src\"])\n    tokenizer_tgt = get_or_build_tokenizer(config, ds_raw, config[\"lang_tgt\"])\n    train_ds_size = int(0.9 * len(ds_raw))\n    val_ds_size = len(ds_raw) - train_ds_size\n    train_ds_raw , val_ds_raw = random_split(ds_raw, [train_ds_size, val_ds_size])",
+        "peekOfCode": "def get_ds(config):\n    ds_raw = load_dataset(\"opus_books\", f\"{config['lang_src']}-f{config['tgt_src']}\", split=\"train\")\n    tokenizer_src = get_or_build_tokenizer(config, ds_raw, config[\"lang_src\"])\n    tokenizer_tgt = get_or_build_tokenizer(config, ds_raw, config[\"lang_tgt\"])\n    train_ds_size = int(0.9 * len(ds_raw))\n    val_ds_size = len(ds_raw) - train_ds_size\n    train_ds_raw , val_ds_raw = random_split(ds_raw, [train_ds_size, val_ds_size])\n    train_ds = BilingualDataset(train_ds_raw, tokenizer_src, tokenizer_tgt, config['lang_src'], config['lang_tgt'], config['seq_len'])\n    val_ds = BilingualDataset(val_ds_raw, tokenizer_src, tokenizer_tgt, config['lang_src'], config['lang_tgt'], config['seq_len'])\n    # Find the maximum length of each sentence in the source and target sentence",
         "detail": "train",
         "documentation": {}
     }
