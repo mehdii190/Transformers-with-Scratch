@@ -1,5 +1,13 @@
 [
     {
+        "label": "Iterable",
+        "importPath": "collections.abc",
+        "description": "collections.abc",
+        "isExtraImport": true,
+        "detail": "collections.abc",
+        "documentation": {}
+    },
+    {
         "label": "torch",
         "kind": 6,
         "isExtraImport": true,
@@ -18,12 +26,19 @@
         "documentation": {}
     },
     {
-        "label": "math",
-        "kind": 6,
+        "label": "Dataset",
+        "importPath": "torch.utils.data",
+        "description": "torch.utils.data",
         "isExtraImport": true,
-        "importPath": "math",
-        "description": "math",
-        "detail": "math",
+        "detail": "torch.utils.data",
+        "documentation": {}
+    },
+    {
+        "label": "DataLoader",
+        "importPath": "torch.utils.data",
+        "description": "torch.utils.data",
+        "isExtraImport": true,
+        "detail": "torch.utils.data",
         "documentation": {}
     },
     {
@@ -32,6 +47,15 @@
         "description": "torch.utils.data",
         "isExtraImport": true,
         "detail": "torch.utils.data",
+        "documentation": {}
+    },
+    {
+        "label": "math",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "math",
+        "description": "math",
+        "detail": "math",
         "documentation": {}
     },
     {
@@ -80,6 +104,24 @@
         "description": "pathlib",
         "isExtraImport": true,
         "detail": "pathlib",
+        "documentation": {}
+    },
+    {
+        "label": "BilingualDataset",
+        "kind": 6,
+        "importPath": "dataset",
+        "description": "dataset",
+        "peekOfCode": "class BilingualDataset(Dataset):\n    def __init__(self, ds, tokenizer_src, tokenizer_tgt, src_lang, tgt_lang, seq_len) -> None:\n        super().__init__()\n        self.ds = ds\n        self.tokenizer_src = tokenizer_src\n        self.tokenizer_tgt = tokenizer_tgt\n        self.src_lang = src_lang\n        self.tgt_lang = tgt_lang\n        self.seq_len = seq_len\n        self.sos_token = torch.Tensor([tokenizer_src.token_to_id([\"[SOS]\"])], dtype=torch.int64)",
+        "detail": "dataset",
+        "documentation": {}
+    },
+    {
+        "label": "causal_mask",
+        "kind": 2,
+        "importPath": "dataset",
+        "description": "dataset",
+        "peekOfCode": "def causal_mask(size):\n    mask = torch.triu(torch.ones((1, size, size)), diagonal=1).type(torch.int)\n    return mask == 0",
+        "detail": "dataset",
         "documentation": {}
     },
     {
