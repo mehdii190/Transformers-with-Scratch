@@ -27,6 +27,14 @@
         "documentation": {}
     },
     {
+        "label": "random_split",
+        "importPath": "torch.utils.data",
+        "description": "torch.utils.data",
+        "isExtraImport": true,
+        "detail": "torch.utils.data",
+        "documentation": {}
+    },
+    {
         "label": "load_dataset",
         "importPath": "datasets",
         "description": "datasets",
@@ -206,6 +214,15 @@
         "importPath": "train",
         "description": "train",
         "peekOfCode": "def get_or_build_tokenizer(config, ds, lang):\n    tokenizer_path = Path(config[\"tokenizer_file\"].format(lang))\n    if not Path.exists(tokenizer_path):\n        tokenizer = Tokenizer(WordLevel(unk_token=\"[UNK]\"))\n        tokenizer.pre_tokenizer = Whitespace()\n        trainer = WordLevelTrainer(special_tokens = [\"[UNK]\", \"[PAD]\", \"[SOS]\", \"[EOS]\"], min_frequency=2)\n        tokenizer.train_from_iterator(get_all_sentences(ds, lang), trainer=trainer)\n        tokenizer.save(str(tokenizer_path))\n    else:\n        tokenizer = Tokenizer.from_file(str(tokenizer_path))",
+        "detail": "train",
+        "documentation": {}
+    },
+    {
+        "label": "get_ds",
+        "kind": 2,
+        "importPath": "train",
+        "description": "train",
+        "peekOfCode": "def get_ds(config):\n    ds_raw = load_dataset(\"opus_books\", f\"{config['lang_src']}-f{config['tgt_src']}\", split=\"train\")\n    tokenizer_src = get_or_build_tokenizer(config, ds_raw, config[\"lang_src\"])\n    tokenizer_tgt = get_or_build_tokenizer(config, ds_raw, config[\"lang_tgt\"])\n    train_ds_size = int(0.9 * len(ds_raw))\n    val_ds_size = len(ds_raw) - train_ds_size\n    train_ds_raw , val_ds_raw = random_split(ds_raw, [train_ds_size, val_ds_size])",
         "detail": "train",
         "documentation": {}
     }
